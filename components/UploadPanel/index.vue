@@ -2,16 +2,16 @@
     <div class="max-w-[394px] w-full h-fit divide-y divide-brand-gray-700 rounded-lg border text-white border-brand-gray-700 bg-brand-gray">
         <div class="space-y-2 p-6">
             <span class="font-semibold text-lg">
-                Confirmation
+                {{ title }}
             </span>
 
-            <p class="text-sm text-brand-gray-400">
+            <p v-if="activeTab !== 1 && activeTab !== 2" class="text-sm text-brand-gray-400">
                 Uploading has been started. You can minimize this. This will resume in the background.
             </p>
         </div>
 
         <div class="p-6">
-            <div class="hidden">
+            <div v-if="activeTab === 1">
                 <h2 class="font-bold text-2xl">
                     You’re almost there!
                 </h2>
@@ -20,10 +20,10 @@
                     To continue, please agree to our <a href="#" class="text-primary underline">Terms of Services.</a>
                 </p>
     
-                <ButtonPrimary title="I agree" class="w-full"/>
+                <ButtonPrimary @click="activeTab = 2" title="I agree" class="w-full"/>
             </div>
 
-            <div class="">
+            <div v-if="activeTab === 2">
                 <h2 class="font-bold text-2xl">
                     You’re almost there!
                 </h2>
@@ -154,14 +154,28 @@
             </div>
         </div>
 
-        <div class="px-6 py-3.5">
+        <div v-if="activeTab === 3" class="px-6 py-3.5">
             <ButtonSecondary />
         </div>
     </div>
 </template>
 
 <script setup>
+const activeTab = ref(1)
 
+const title = computed(() => {
+  if (activeTab.value === 1) {
+    return 'Confirmation';
+  } else if (activeTab.value === 2) {
+    return 'IDFA';
+  } else if (activeTab.value === 3) {
+    return 'Uploading Start';
+  } else if (activeTab.value === 4) {
+    return 'Uploading Start';
+  } else {
+    return 'Uploading Completed'; // Handle other cases if needed
+  }
+});
 </script>
 
 <style scoped>
