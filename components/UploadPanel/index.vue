@@ -1,11 +1,22 @@
 <template>
     <div class="max-w-[394px] w-full h-fit divide-y divide-brand-gray-700 rounded-lg border text-white border-brand-gray-700 bg-brand-gray">
         <div class="space-y-2 p-6">
-            <span class="font-semibold text-lg">
-                {{ title }}
-            </span>
+            <p class="font-semibold text-lg">
+                <span v-if="activeTab === 1">
+                    Confirmation
+                </span>
+                <span v-if="activeTab === 2 && !uploading">
+                    IDFA
+                </span>
+                <span v-if="uploading && uploadPercentage < 100">
+                    Uploading Start
+                </span>
+                <span v-if="uploadPercentage === 100">
+                    Uploading Completed
+                </span>
+            </p>
 
-            <p v-if="activeTab !== 1 && activeTab !== 2" class="text-sm text-brand-gray-400">
+            <p v-if="uploading" class="text-sm text-brand-gray-400">
                 Uploading has been started. You can minimize this. This will resume in the background.
             </p>
         </div>
@@ -23,30 +34,54 @@
                 <ButtonPrimary @click="activeTab = 2" title="I agree" class="w-full"/>
             </div>
 
-            <div v-if="activeTab === 2">
+            <div v-if="activeTab === 2 && !uploading">
                 <h2 class="font-bold text-2xl">
-                    You’re almost there!
+                    TestFrank 20230905
                 </h2>
 
                 <p class="text-brand-gray-light pt-5 pb-4">
                     Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut al
                 </p>
 
-                <DragAndDrop />
+                <div
+                    :class="{ 'opacity-50': isDragging }"
+                    class="rounded-lg bg-primary/5 border border-dashed border-primary/40 px-8 py-5"
+                    @dragover="handleDragOver"
+                    @dragleave="handleDragLeave"
+                    @drop="handleDrop"
+                >
+                    <div class="flex flex-col items-center text-center">
+                        <img src="/upload.svg" alt="">
+                        <span class="text-sm text-brand-gray-400 pt-2">Drag files here to upload</span>
+                        <button class="font-medium underline text-primary pt-1.5">
+                            <label for="fileInput" class="cursor-pointer">or browse for files and folders</label>
+                        </button>
+                        <span class="text-sm text-brand-gray-400 pt-5">File size: 200GB</span>
+                        <span class="text-sm text-brand-gray-400 pt-0.5">Format support: .m4a, .mp4, .mov</span>
+                        <input
+                            type="file"
+                            id="fileInput"
+                            ref="fileInput"
+                            style="display: none"
+                            @change="handleFileInput"
+                            multiple
+                        />
+                    </div>
+                </div>
             </div>
 
-            <div class="hidden space-y-2.5">
+            <div v-if="uploading && uploadPercentage < 90" class="space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <div>
                         <p class="text-sm text-brand-gray-400">
                             <span class="text-base text-white">
-                                15
+                                {{ successfullyUploadedCount }}
                             </span>
                             <span>
                                 /
                             </span>
                             <span>
-                                83
+                                {{ totalFiles }}
                             </span>
                         </p>
 
@@ -61,70 +96,64 @@
                                 5.6GB
                             </span>
                             <span class="text-sm">
-                                (23.4%)
+                                ({{ uploadPercentage }}%)
                             </span>
                         </div>
 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none">
-                            <rect x="3.5" y="3.5" width="93" height="93" rx="46.5" stroke="#23262A" stroke-width="7"/>
-                            <mask id="path-2-inside-1_127_15721" fill="white">
-                            <path d="M94.7715 62.7787C96.5987 63.3002 98.5151 62.2434 98.9097 60.3846C100.272 53.9707 100.361 47.3399 99.1596 40.8713C97.7486 33.2729 94.5955 26.1051 89.9478 19.9306C85.3002 13.7561 79.2845 8.74296 72.3731 5.28487C66.4893 2.34089 60.0926 0.592174 53.5523 0.126342C51.6569 -0.00865612 50.1111 1.54053 50.1068 3.44072C50.1024 5.3409 51.6418 6.87057 53.5356 7.02638C59.0113 7.47688 64.3616 8.9708 69.2941 11.4387C75.2542 14.4209 80.442 18.7441 84.4501 24.0689C88.4581 29.3936 91.1773 35.575 92.3941 42.1276C93.401 47.5503 93.3564 53.105 92.2744 58.4917C91.9002 60.3547 92.9442 62.2572 94.7715 62.7787Z"/>
-                            </mask>
-                            <path d="M94.7715 62.7787C96.5987 63.3002 98.5151 62.2434 98.9097 60.3846C100.272 53.9707 100.361 47.3399 99.1596 40.8713C97.7486 33.2729 94.5955 26.1051 89.9478 19.9306C85.3002 13.7561 79.2845 8.74296 72.3731 5.28487C66.4893 2.34089 60.0926 0.592174 53.5523 0.126342C51.6569 -0.00865612 50.1111 1.54053 50.1068 3.44072C50.1024 5.3409 51.6418 6.87057 53.5356 7.02638C59.0113 7.47688 64.3616 8.9708 69.2941 11.4387C75.2542 14.4209 80.442 18.7441 84.4501 24.0689C88.4581 29.3936 91.1773 35.575 92.3941 42.1276C93.401 47.5503 93.3564 53.105 92.2744 58.4917C91.9002 60.3547 92.9442 62.2572 94.7715 62.7787Z" stroke="#0E9F6E" stroke-width="14" mask="url(#path-2-inside-1_127_15721)"/>
+                        <!-- Circle -->
+                        <svg class="-rotate-90" width="100" height="100">
+                            <circle cx="50" cy="50" r="45" stroke="#23262A" stroke-width="7" fill="none" />
+                            <circle
+                                cx="50"
+                                cy="50"
+                                r="45"
+                                stroke="#0E9F6E"
+                                stroke-width="7"
+                                fill="none"
+                                :stroke-dasharray="282.74"
+                                :stroke-dashoffset="282.74 - (282.74 * (uploadPercentage / 100))"
+                            />
                         </svg>
                     </div>
                 </div>
 
-                <div class="space-y-8">
-                    <div class="flex items-center gap-3">
-                        <img src="/check.svg" alt="">
-                        <div>
+                <ul class="space-y-8">
+                    <li v-for="file in uploadingFiles" :key="file.name" class="flex items-center gap-3">
+                        <img v-if="file.progress < 100" src="/x-circle.svg" alt="x-icon">
+                        <img v-else src="/check.svg" alt="tick">
+                        <div class="w-full space-y-1.5">
                             <div class="flex items-center gap-3">
-                                <img src="/zip.svg" alt="">
+                                <img src="/mp4File.svg" alt="">
 
-                                <div class="flex flex-col gap-1">
+                                <div class="flex flex-col w-full gap-1">
                                     <span>
-                                        pkl_e5bf9b07...02b7e6.xrd
+                                        {{ file.name }}
                                     </span>
-                                    <span class="text-sm text-gray-400">
+                                    <div v-if="file.progress < 100" class="flex items-center justify-between gap-2 text-sm text-gray-400">
+                                        <span>
+                                            {{ formatSize(file.uploadedMB) }} / {{ formatSize(file.sizeMB) }}  (12.5 mbps)
+                                        </span>
+
+                                        <span>
+                                            {{ file.progress }}%
+                                        </span>
+                                    </div>
+                                    <span v-else class="text-sm text-gray-400">
                                         1.5 GB
                                     </span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <img src="/x-circle.svg" alt="">
-                        <div class="w-full space-y-1.5">
-                            <div class="flex items-center gap-3">
-                                <img src="/zip.svg" alt="">
-
-                                <div class="flex flex-col w-full gap-1">
-                                    <span>
-                                        pkl_e5bf9b07...02b7e6.xrd
-                                    </span>
-                                    <div class="flex items-center justify-between gap-2 text-sm text-gray-400">
-                                        <span>
-                                            105.5mb/ 2.24gb  (12.5 mbps)
-                                        </span>
-
-                                        <span>
-                                            75%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- progress -->
-                            <div class="relative w-full h-1.5 rounded-sm bg-brand-gray-600/30">
-                                <div class="absolute h-full w-3/4 bg-brand-green-500 rounded-sm"></div>
+                            <div v-if="file.progress < 100" class="relative w-full h-1.5 rounded-sm bg-brand-gray-600/30">
+                                <div :style="{ width: file.progress + '%' }" class="absolute h-full bg-brand-green-500 rounded-sm"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
 
-            <div class="hidden flex flex-col items-center text-center">
+            <div v-if="uploadPercentage > 90" class="flex flex-col items-center text-center">
                 <div class="relative">
                     <div class="absolute inset-0 flex flex-col items-center justify-center font-semibold text-white text-center">
                         <span class="text-xl">
@@ -135,27 +164,41 @@
                         </span>
                     </div>
 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
-                        <rect x="5" y="5" width="170" height="170" rx="85" stroke="#23262A" stroke-width="10"/>
-                        <mask id="path-2-inside-1_285_6134" fill="white">
-                        <path d="M45.1031 17.8069C43.6492 15.4691 40.5659 14.7414 38.3121 16.3225C21.7753 27.9231 9.5782 44.7862 3.76733 64.2332C-2.52047 85.2764 -0.896703 107.892 8.33278 127.822C17.5623 147.751 33.7604 163.617 53.8762 172.432C73.9919 181.247 96.6367 182.403 117.545 175.681C138.454 168.959 156.183 154.824 167.393 135.938C178.603 117.052 182.521 94.7187 178.408 73.1448C174.294 51.571 162.435 32.2456 145.062 18.8089C129.007 6.39147 109.268 -0.204685 89.0694 0.0047218C86.3165 0.0332618 84.2348 2.42135 84.4157 5.16846C84.5965 7.91557 86.9715 9.97963 89.7246 9.97008C107.493 9.90846 124.833 15.7663 138.963 26.6951C154.411 38.6433 164.957 55.8279 168.614 75.012C172.272 94.196 168.788 114.055 158.82 130.849C148.852 147.643 133.086 160.213 114.494 166.19C95.9015 172.167 75.7652 171.14 57.8778 163.301C39.9903 155.462 25.5865 141.353 17.3794 123.632C9.17233 105.91 7.72844 85.7996 13.3197 67.0875C18.4339 49.972 29.1111 35.1072 43.5869 24.8027C45.8297 23.2061 46.557 20.1447 45.1031 17.8069Z"/>
-                        </mask>
-                        <path d="M45.1031 17.8069C43.6492 15.4691 40.5659 14.7414 38.3121 16.3225C21.7753 27.9231 9.5782 44.7862 3.76733 64.2332C-2.52047 85.2764 -0.896703 107.892 8.33278 127.822C17.5623 147.751 33.7604 163.617 53.8762 172.432C73.9919 181.247 96.6367 182.403 117.545 175.681C138.454 168.959 156.183 154.824 167.393 135.938C178.603 117.052 182.521 94.7187 178.408 73.1448C174.294 51.571 162.435 32.2456 145.062 18.8089C129.007 6.39147 109.268 -0.204685 89.0694 0.0047218C86.3165 0.0332618 84.2348 2.42135 84.4157 5.16846C84.5965 7.91557 86.9715 9.97963 89.7246 9.97008C107.493 9.90846 124.833 15.7663 138.963 26.6951C154.411 38.6433 164.957 55.8279 168.614 75.012C172.272 94.196 168.788 114.055 158.82 130.849C148.852 147.643 133.086 160.213 114.494 166.19C95.9015 172.167 75.7652 171.14 57.8778 163.301C39.9903 155.462 25.5865 141.353 17.3794 123.632C9.17233 105.91 7.72844 85.7996 13.3197 67.0875C18.4339 49.972 29.1111 35.1072 43.5869 24.8027C45.8297 23.2061 46.557 20.1447 45.1031 17.8069Z" stroke="#0E9F6E" stroke-width="14" mask="url(#path-2-inside-1_285_6134)"/>
+                    <svg class="-rotate-90" width="180" height="180" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <circle cx="90" cy="90" r="85" stroke="#23262A" stroke-width="10" fill="none" />
+                        <circle
+                            cx="90"
+                            cy="90"
+                            r="85"
+                            stroke="#0E9F6E"
+                            stroke-width="10"
+                            fill="none"
+                            :stroke-dasharray="534.1"
+                            :stroke-dashoffset="534.1 - (534.1 * (uploadPercentage / 100))"
+                        />
                     </svg>
                 </div>
 
-                <h2 class="font-bold text-2xl text-primary pt-5">
+                <h2 v-if="uploadPercentage !== 100" class="font-bold text-2xl text-primary pt-5">
                     Almost There...
                 </h2>
+                <h2 class="font-bold text-2xl text-primary pt-5">
+                    Upload Completed
+                </h2>
 
-                <p class="text-sm text-brand-gray-light pt-1.5">
+                <p v-if="uploadPercentage !== 100" class="text-sm text-brand-gray-light pt-1.5">
                     Uploading is about to finish and then you can see your uploaded media.
+                </p>
+                <p class="text-sm text-brand-gray-light pt-1.5">
+                    Total 86 files has been uploaded successfully. You can see your file through this link:
+                    <a href="#" class="text-primary font-medium underline">Click Here</a>
                 </p>
             </div>
         </div>
 
-        <div v-if="activeTab === 3" class="px-6 py-3.5">
-            <ButtonSecondary />
+        <div v-if="uploading" class="px-6 py-3.5">
+            <ButtonSecondary v-if="uploadPercentage !== 100" class="w-36" />
+            <ButtonSecondary v-else title="Upload More Files" />
         </div>
     </div>
 </template>
@@ -163,19 +206,117 @@
 <script setup>
 const activeTab = ref(1)
 
-const title = computed(() => {
-  if (activeTab.value === 1) {
-    return 'Confirmation';
-  } else if (activeTab.value === 2) {
-    return 'IDFA';
-  } else if (activeTab.value === 3) {
-    return 'Uploading Start';
-  } else if (activeTab.value === 4) {
-    return 'Uploading Start';
-  } else {
-    return 'Uploading Completed'; // Handle other cases if needed
+const fileInput = ref(null);
+const isDragging = ref(false);
+const uploading = ref(false);
+const uploadingFiles = ref([]);
+
+const successfullyUploadedCount = ref(0);
+const totalFiles = ref(0);
+
+const handleDrop = (event) => {
+  event.preventDefault();
+  isDragging.value = false;
+  const files = event.dataTransfer.files;
+  handleFiles(files);
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault();
+  isDragging.value = true;
+};
+
+const handleDragLeave = () => {
+  isDragging.value = false;
+};
+
+const openFileDialog = () => {
+  fileInput.value.click();
+};
+
+const handleFileInput = () => {
+  const files = fileInput.value.files;
+  handleFiles(files);
+};
+
+const updateFileCounts = () => {
+  successfullyUploadedCount.value = uploadingFiles.value.filter((file) => file.progress >= 100).length;
+  totalFiles.value = uploadingFiles.value.length;
+};
+
+const handleFiles = (files) => {
+  for (const file of files) {
+    if (file.size > maxFileSize) {
+      alert(`File size of ${file.name} exceeds the maximum allowed size of 200GB.`);
+    } else if (!supportedFormats.includes(file.name.slice(-4))) {
+      alert(`Unsupported file format: ${file.name}. Supported formats are .m4a, .mp4, .mov`);
+    } else {
+      const fileSizeMB = file.size / (1024 * 1024);
+      uploadingFiles.value.push({ name: file.name, progress: 0, sizeMB: fileSizeMB, uploadedMB: 0 });
+      uploadFile(file, uploadingFiles.value[uploadingFiles.value.length - 1]);
+    }
   }
+  uploading.value = uploadingFiles.value.length > 0;
+};
+
+const uploadFile = async (file, fileInfo) => {
+  const result = await simulateFileUpload(file, fileInfo);
+  if (result) {
+    alert(`File uploaded: ${file.name}`);
+  } else {
+    alert(`File upload failed: ${file.name}`);
+  }
+};
+
+const simulateFileUpload = (file, fileInfo) => {
+  return new Promise((resolve) => {
+    let progress = 0;
+    const totalProgress = 100;
+    const fileSizeMB = fileInfo.sizeMB;
+    const increaseRate = (totalProgress - 1) / fileSizeMB;
+    const interval = setInterval(() => {
+      if (progress < totalProgress) {
+        progress += increaseRate;
+        fileInfo.progress = Math.min(Math.floor(progress) + 1, totalProgress);
+        fileInfo.uploadedMB = Math.min(Math.floor((progress / 100) * fileSizeMB), fileSizeMB);
+        updateFileCounts(); // Update counts when progress changes
+      } else {
+        clearInterval(interval);
+        resolve(true);
+      }
+    }, 1000);
+  });
+};
+
+const maxFileSize = 200 * 1024 * 1024 * 1024;
+const supportedFormats = ['.m4a', '.mp4', '.mov'];
+
+// Watch for changes in uploadingFiles to update counts
+watch(uploadingFiles, updateFileCounts);
+
+const totalSizeMB = computed(() => {
+  return uploadingFiles.value.reduce((total, file) => total + file.sizeMB, 0);
 });
+
+const uploadPercentage = computed(() => {
+  if (totalSizeMB.value > 0) {
+    const totalUploadedMB = uploadingFiles.value.reduce((total, file) => total + (file.progress / 100) * file.sizeMB, 0);
+    return Math.floor((totalUploadedMB / totalSizeMB.value) * 100);
+  }
+  return 0;
+});
+
+// Watch for changes in successfullyUploadedCount and totalFiles to update the uploadPercentage
+watch([successfullyUploadedCount, totalFiles], () => {
+  uploadPercentage.value = Math.floor((successfullyUploadedCount.value / totalFiles.value) * 100);
+});
+
+const formatSize = (sizeInMB) => {
+  if (sizeInMB > 1000) {
+    return (sizeInMB / 1000).toFixed(1) + 'GB';
+  }
+  return sizeInMB.toFixed(1) + 'MB';
+};
 </script>
 
 <style scoped>
