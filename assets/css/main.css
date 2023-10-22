@@ -5,3 +5,7 @@
 body {
     @apply bg-black font-inter
 }
+
+input {
+    @apply focus:outline-none focus:border-primary
+}
