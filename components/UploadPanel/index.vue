@@ -21,8 +21,8 @@
             </p>
         </div>
 
-        <div class="p-6">
-            <div v-if="activeTab === 1">
+        <div class="py-6">
+            <div v-if="activeTab === 1" class="px-6">
                 <h2 class="font-bold text-2xl">
                     You’re almost there!
                 </h2>
@@ -34,7 +34,7 @@
                 <ButtonPrimary @click="activeTab = 2" title="I agree" class="w-full"/>
             </div>
 
-            <div v-if="activeTab === 2 && !uploading">
+            <div v-if="activeTab === 2 && !uploading" class="px-6">
                 <h2 class="font-bold text-2xl">
                     TestFrank 20230905
                 </h2>
@@ -71,7 +71,7 @@
             </div>
 
             <div v-if="uploading && uploadPercentage < 90" class="space-y-2.5">
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center justify-between gap-2 px-6">
                     <div>
                         <p class="text-sm text-brand-gray-400">
                             <span class="text-base text-white">
@@ -93,7 +93,7 @@
                     <div class="relative">
                         <div class="absolute inset-0 flex flex-col items-center justify-center font-semibold text-white text-center">
                             <span>
-                                5.6GB
+                                <span>{{ formatSize(totalSizeMB) }}</span>
                             </span>
                             <span class="text-sm">
                                 ({{ uploadPercentage }}%)
@@ -117,7 +117,7 @@
                     </div>
                 </div>
 
-                <ul class="space-y-8">
+                <ul class="space-y-8 max-h-56 overflow-auto pl-6 pr-3 mr-1.5">
                     <li v-for="file in uploadingFiles" :key="file.name" class="flex items-center gap-3">
                         <img v-if="file.progress < 100" src="/x-circle.svg" alt="x-icon">
                         <img v-else src="/check.svg" alt="tick">
@@ -139,7 +139,7 @@
                                         </span>
                                     </div>
                                     <span v-else class="text-sm text-gray-400">
-                                        1.5 GB
+                                        {{ formatSize(file.sizeMB) }}
                                     </span>
                                 </div>
                             </div>
@@ -153,14 +153,14 @@
                 </ul>
             </div>
 
-            <div v-if="uploadPercentage > 90" class="flex flex-col items-center text-center">
+            <div v-if="uploadPercentage > 90" class="flex flex-col items-center text-center p-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex flex-col items-center justify-center font-semibold text-white text-center">
                         <span class="text-xl">
-                            21.6GB
+                            <span>{{ formatSize(totalSizeMB) }}</span>
                         </span>
                         <span class="text-lg">
-                            (97.8%)
+                            ({{ uploadPercentage }}%)
                         </span>
                     </div>
 
@@ -182,14 +182,14 @@
                 <h2 v-if="uploadPercentage !== 100" class="font-bold text-2xl text-primary pt-5">
                     Almost There...
                 </h2>
-                <h2 class="font-bold text-2xl text-primary pt-5">
+                <h2 v-else class="font-bold text-2xl text-primary pt-5">
                     Upload Completed
                 </h2>
 
                 <p v-if="uploadPercentage !== 100" class="text-sm text-brand-gray-light pt-1.5">
                     Uploading is about to finish and then you can see your uploaded media.
                 </p>
-                <p class="text-sm text-brand-gray-light pt-1.5">
+                <p v-else class="text-sm text-brand-gray-light pt-1.5">
                     Total 86 files has been uploaded successfully. You can see your file through this link:
                     <a href="#" class="text-primary font-medium underline">Click Here</a>
                 </p>
@@ -199,6 +199,61 @@
         <div v-if="uploading" class="px-6 py-3.5">
             <ButtonSecondary v-if="uploadPercentage !== 100" class="w-36" />
             <ButtonSecondary v-else title="Upload More Files" />
+        </div>
+    </div>
+
+    <!-- Transfer Overview -->
+    <div class="hidden fixed right-0 top-0 w-full z-50">
+        <div class="h-screen flex flex-col max-w-2xl w-full bg-brand-gray ml-auto">
+            <div class="flex items-center justify-between border-b border-brand-gray-600/40 py-5 pr-6 pl-8">
+                <div class="flex items-center gap-4 text-lg">
+                    <h4 class="text-white font-semibold">
+                        Transfer Overview
+                    </h4>
+                    <p class="text-brand-gray-light">
+                        of <span class="text-white">{{ totalFiles }}</span> Files
+                    </p>
+                </div>
+    
+                <button type="button">
+                    <img src="/close.svg" alt="">
+                </button>
+            </div>
+
+            <div class="flex-1 py-2.5 overflow-y-auto">
+                <div class="flex flex-col h-full overflow-y-auto pr-7 pl-10 mr-3.5">
+                    <ul class="space-y-4">
+                        <li v-for="file in uploadingFiles" :key="file.name" class="flex items-center gap-3">
+                            <input type="checkbox" class="appearance-none w-4 h-4 rounded bg-brand-gray-700 checked:bg-primary checked:border-primary checked:bg-tick bg-center bg-no-repeat border-[0.5px] border-brand-gray-600">
+    
+                            <img src="/mp4File.svg" alt="">
+    
+                            <div class="flex flex-col w-full gap-1">
+                                <span class="text-white">
+                                    {{ file.name }}
+                                </span>
+                                <span class="text-sm text-gray-400">
+                                    {{ formatSize(file.sizeMB) }}
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-8 gap-y-5 border-t border-brand-gray-600/40 text-sm py-8 px-10">
+                <input type="text" id="productionName" placeholder="Production Name" class="w-full h-11 rounded-lg border border-brand-gray-600/30 text-brand-gray-400 bg-brand-input px-4 py-3">
+                <input type="text" id="productionName" placeholder="Production Name" class="w-full h-11 rounded-lg border border-brand-gray-600/30 text-brand-gray-400 bg-brand-input px-4 py-3">
+                <input type="email" id="email" placeholder="Email Address" class="w-full h-11 rounded-lg border border-brand-gray-600/30 text-brand-gray-400 bg-brand-input px-4 py-3">
+                <input type="email" id="email" placeholder="Email Address" class="w-full h-11 rounded-lg border border-brand-gray-600/30 text-brand-gray-400 bg-brand-input px-4 py-3">
+            </div>
+
+            <div class="grid grid-cols-2 gap-5 border-t border-brand-gray-600/40 py-7 px-12">
+                <ButtonPrimary title="Transfer" />
+                <button type="button" class="font-medium text-primary underline hover:no-underline text-left">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -228,10 +283,6 @@ const handleDragOver = (event) => {
 
 const handleDragLeave = () => {
   isDragging.value = false;
-};
-
-const openFileDialog = () => {
-  fileInput.value.click();
 };
 
 const handleFileInput = () => {
@@ -320,5 +371,26 @@ const formatSize = (sizeInMB) => {
 </script>
 
 <style scoped>
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 30px;
+  background: #202225;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #FF4370; 
+  border-radius: 30px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(255, 35, 87); 
+}
 </style>

@@ -38,6 +38,7 @@ export default {
             light: '#909192',
             border: '#23262A',
           },
+          yellow: '#EAA902',
           green: {
             500: '#0E9F6E',
           },
@@ -51,6 +52,10 @@ export default {
 
       boxShadow: {
         brand: '4px 4px 32px 4px rgba(0, 0, 0, 0.10)'
+      },
+
+      backgroundImage: {
+        tick: 'url(/tick.svg)',
       }
     },
   },
