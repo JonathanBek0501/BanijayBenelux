@@ -200,7 +200,7 @@
 
         <div v-if="uploading" class="px-6 py-3.5">
             <ButtonSecondary v-if="uploadPercentage !== 100" class="w-36" />
-            <ButtonSecondary v-else title="Upload More Files" />
+            <ButtonSecondary @click="hideAdditionalInformation()" v-else title="Upload More Files" />
         </div>
     </div>
 
