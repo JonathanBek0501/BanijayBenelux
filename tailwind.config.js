@@ -10,7 +10,6 @@ export default {
   theme: {
     extend: {
       maxWidth: {
-        base: '1440px',
         brandLg: '500px'
       },
 
