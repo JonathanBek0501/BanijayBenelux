@@ -1,7 +1,7 @@
 <template>
     <header>
         <div class="absolute left-1/2 -translate-x-1/2 top-0 w-full flex items-center justify-between py-7 px-16 z-10">
-            <img src="/logo.svg" alt="Logo">
+            <img src="/logo.png" alt="Logo">
     
             <div class="flex text-white font-sen leading-5 rounded-lg border border-brand-gray-700 bg-brand-gray py-2.5 px-5">
                 <a href="#" class="py-2.5 px-3.5">

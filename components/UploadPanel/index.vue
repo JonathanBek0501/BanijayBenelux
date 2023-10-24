@@ -269,7 +269,7 @@
     <!-- Additional Information -->
     <transition name="slide" mode="out-in">
         <div v-if="uploadPercentage === 100 && showAdditionalInformation" class="fixed right-0 top-0 w-full z-50">
-            <div class="h-screen flex flex-col max-w-4xl w-full bg-brand-gray ml-auto">
+            <div class="h-screen flex flex-col max-w-5xl w-full bg-brand-gray ml-auto">
                 <div class="flex items-center justify-between border-b border-brand-gray-600/40 py-5 pr-6 pl-8">
                     <div class="flex items-center gap-4 text-lg">
                         <h4 class="text-white font-semibold">

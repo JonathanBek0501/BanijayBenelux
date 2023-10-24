@@ -1,7 +1,5 @@
 <template>
-    <Header :toggleSideBar="toggleSideBar" />
-
-    <main class="relative h-screen">
+    <div class="relative h-screen">
         <!-- Absolute shape -->
         <img class="absolute top-0 right-0 opacity-5 -z-10" src="/shape.svg" alt="">
 
@@ -33,24 +31,8 @@
                 <img src="/company-workers.png" alt="">
             </div>
         </div>
-
-        <transition name="slide" mode="out-in">
-            <SideBar v-if="sideBar" :toggleSideBar="toggleSideBar" />
-        </transition>
-    </main>
-
-    <Footer />
+    </div>
 </template>
-
-<script setup>
-const sideBar = ref(false);
-
-const toggleSideBar = () => {
-    sideBar.value = !sideBar.value;
-}
-
-provide('toggleSideBar', toggleSideBar);
-</script>
 
 <style>
 .slide-enter-active,
