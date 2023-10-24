@@ -7,7 +7,7 @@
             <div class="pt-[14%]">
                 <div class="flex gap-24 ml-5">
                     <UploadPanel />
-    
+
                     <div class="text-white space-y-5 mt-11">
                         <span class="block text-[26px] leading-10">
                             #WeAreBanijay
@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </div>
-    
+
             <!-- Absolute -->
             <div class="absolute bottom-0 right-14 -z-10">
                 <img src="/company-workers.png" alt="">
