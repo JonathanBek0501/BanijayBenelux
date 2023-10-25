@@ -269,8 +269,8 @@
     <!-- Additional Information -->
     <transition name="slide" mode="out-in">
         <div v-if="uploadPercentage === 100 && showAdditionalInformation" class="fixed right-0 top-0 w-full z-50">
-            <div class="h-screen flex flex-col max-w-5xl w-full bg-brand-gray ml-auto">
-                <div class="flex items-center justify-between border-b border-brand-gray-600/40 py-5 pr-6 pl-8">
+            <div class="h-screen flex flex-col lg:max-w-[90%] w-full bg-brand-gray ml-auto">
+                <div class="flex items-center justify-between border-b border-brand-gray-600/40 py-5 p-5 sm:pr-6 sm:pl-8">
                     <div class="flex items-center gap-4 text-lg">
                         <h4 class="text-white font-semibold">
                             Additional Information
@@ -440,9 +440,9 @@
                     </div>
                 </div>
     
-                <div class="flex gap-5 border-t border-brand-gray-600/40 py-7 px-12">
-                    <ButtonPrimary @click="hideAdditionalInformation()" title="Save" class="max-w-[288px] w-full" />
-                    <button @click="hideAdditionalInformation()" type="button" class="font-medium text-primary underline hover:no-underline text-left">
+                <div class="flex flex-col sm:flex-row items-center gap-5 border-t border-brand-gray-600/40 p-5 sm:py-7 sm:px-12">
+                    <ButtonPrimary @click="hideAdditionalInformation()" title="Save" class="sm:max-w-[288px] w-full" />
+                    <button @click="hideAdditionalInformation()" type="button" class="font-medium text-primary underline hover:no-underline sm:text-left">
                         I’ll complete it later
                     </button>
                 </div>
@@ -623,29 +623,6 @@ const evenFiles = computed(() => uploadingFiles.value.filter((file, index) => in
 </script>
 
 <style>
-/* width */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
-  border-radius: 30px;
-  background: #202225;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #FF4370; 
-  border-radius: 30px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(255, 35, 87); 
-}
-
 /* Height */
 .expand-leave-active,
 .expand-enter-active {

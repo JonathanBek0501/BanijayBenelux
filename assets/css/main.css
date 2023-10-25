@@ -9,3 +9,30 @@ body {
 input {
     @apply focus:outline-none focus:border-primary
 }
+
+input[type='checkbox'] {
+    @apply focus:outline-none focus:border-transparent
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 30px;
+    background: #202225;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #FF4370; 
+    border-radius: 30px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(255, 35, 87); 
+}

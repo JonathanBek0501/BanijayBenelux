@@ -35,11 +35,15 @@ export default {
             400: '#9CA3AF',
             600: '#4B5563',
             700: '#374151',
+            800: '#1F1F1F',
+            800: '#0E0E0E',
             light: '#909192',
             border: '#23262A',
           },
+          red: '#EA0202',
           yellow: '#EAA902',
           green: {
+            400: '#31C48D',
             500: '#0E9F6E',
           },
           input: '#1D1D1D'

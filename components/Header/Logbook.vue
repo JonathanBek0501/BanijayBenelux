@@ -3,7 +3,7 @@
         <div class="bg-brand-gray absolute left-1/2 -translate-x-1/2 top-0 w-full flex items-center justify-between px-8 py-4 z-10">
             <img src="/logo.png" alt="Logo">
 
-            <div v-if="$route.path !== '/logbook'" class="flex items-center gap-4">
+            <div v-if="!$route.path.startsWith('/logbook')" class="flex items-center gap-4">
                 <button type="button" class="text-white text-sm font-medium">
                     Log In
                 </button>

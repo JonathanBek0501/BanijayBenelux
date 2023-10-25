@@ -1,8 +1,5 @@
 <template>
     <div class="relative h-screen">
-        <!-- Absolute shape -->
-        <img class="absolute top-0 right-0 opacity-5 -z-10" src="/shape.svg" alt="">
-
         <div class="relative px-16 h-full">
             <div class="pt-[14%]">
                 <div class="flex gap-24 ml-5">
