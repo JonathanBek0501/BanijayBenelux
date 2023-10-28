@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-[394px] w-full h-fit divide-y divide-brand-gray-700 rounded-lg border text-white border-brand-gray-700 bg-brand-gray">
+    <div class="relative z-10 max-w-[394px] w-full h-fit divide-y divide-brand-gray-700 rounded-lg border text-white border-brand-gray-700 bg-brand-gray">
         <div class="space-y-2 p-6">
             <p class="font-semibold text-lg">
                 <span v-if="activeTab === 1">

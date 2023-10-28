@@ -36,3 +36,18 @@ input[type='checkbox'] {
 ::-webkit-scrollbar-thumb:hover {
     background: rgb(255, 35, 87); 
 }
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(100%); /* Start position off-screen */
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  transform: translateX(0); /* End position on-screen */
+}
